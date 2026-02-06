@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block title %}Update Profile - Hospital MS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0" style="border-radius: 1rem;">
+            <div class="card-body p-5">
+                <h3 class="mb-4 text-primary fw-bold"><i class="bi bi-pencil-square"></i> Update Profile</h3>
+
+                <form method="post" enctype="multipart/form-data" id="profileUpdateForm">
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Display Name</label>
+                            {{ form.name }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Specialization</label>
+                            {{ form.specialization }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">City</label>
+                            {{ form.city }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Clinic</label>
+                            {{ form.clinic }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Experience (Years)</label>
+                            {{ form.experience }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Consultation Fee</label>
+                            {{ form.consultation_fee }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Profile Image</label>
+                        {{ form.profile_image }}
+                        {% if form.instance.profile_image %}
+                        <div class="mt-2 text-muted small">
+                            Currently: <a href="{{ form.instance.profile_image.url }}" target="_blank">View Image</a>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{% url 'doctors:dashboard' %}" class="text-decoration-none text-muted">CANCEL</a>
+                        <button type="submit" class="btn btn-primary px-4 py-2 rounded-pill fw-bold">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const citySelect = document.getElementById('id_city');
+        const clinicSelect = document.getElementById('id_clinic');
+
+        citySelect.addEventListener('change', function () {
+            const cityId = this.value;
+            clinicSelect.innerHTML = '<option value="">Loading...</option>';
+
+            if (cityId) {
+                fetch(`{% url 'hospitals:get_clinics_by_city' %}?city_id=${cityId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        clinicSelect.innerHTML = '<option value="">Select Hospital/Clinic</option>';
+                        data.forEach(clinic => {
+                            const option = document.createElement('option');
+                            option.value = clinic.id;
+                            option.textContent = clinic.name;
+                            clinicSelect.appendChild(option);
+                        });
+                    });
+            } else {
+                clinicSelect.innerHTML = '<option value="">Select Hospital/Clinic</option>';
+            }
+        });
+    });
+</script>
+{% endblock %}

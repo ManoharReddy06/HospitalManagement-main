@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+{% block title %}Patient Dashboard - Hospital MS{% endblock %}
+{% block extra_css %}
+<style>
+    /* =========================
+   PAGE TITLE
+========================= */
+    h2 {
+        font-weight: 800;
+        color: #0b1c2d;
+    }
+
+    h2 i {
+        color: #1fa37c;
+        margin-right: 6px;
+    }
+
+    /* =========================
+   DASHBOARD CARDS
+========================= */
+    .dashboard-card {
+        border-radius: 1.25rem;
+        border: none;
+        transition: all 0.25s ease;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Profile card */
+    .profile-card {
+        background: linear-gradient(135deg, #1fa37c, #138f6a);
+        color: #fff;
+    }
+
+    /* Action cards */
+    .action-card i {
+        transition: transform 0.25s ease;
+    }
+
+    .action-card:hover i {
+        transform: scale(1.1);
+    }
+
+    .action-card h5 {
+        font-weight: 700;
+        color: #0b1c2d;
+    }
+
+    /* =========================
+   TABLE CARD
+========================= */
+    .card {
+        border-radius: 1.25rem;
+        border: none;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .card-header {
+        background: #f9fafb;
+        font-weight: 700;
+        border-bottom: none;
+    }
+
+    /* =========================
+   TABLE
+========================= */
+    .table thead th {
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #6b7280;
+        border-bottom: none;
+    }
+
+    .table td {
+        vertical-align: middle;
+        font-size: 0.85rem;
+    }
+
+    .table-hover tbody tr:hover {
+        background: #f9fafb;
+    }
+
+    /* =========================
+   BADGES
+========================= */
+    .badge {
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: 0.7rem;
+        padding: 0.35em 0.65em;
+    }
+
+    /* =========================
+   BUTTONS
+========================= */
+    .btn-outline-primary,
+    .btn-outline-danger {
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    /* =========================
+   MOBILE
+========================= */
+    @media (max-width: 768px) {
+        .dashboard-card {
+            margin-bottom: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-grid"></i> Patient Dashboard</h2>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card dashboard-card profile-card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-person-circle"></i> Profile
+                </h5>
+                <p class="mb-0 fw-semibold">{{ user.get_full_name|default:user.username }}</p>
+                <p class="small mb-0">{{ user.email }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <a href="{% url 'doctors:doctor_list' %}" class="text-decoration-none">
+            <div class="card dashboard-card action-card text-center h-100">
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <i class="bi bi-calendar-plus display-5 text-primary"></i>
+                    <h5 class="mt-3">Book Appointment</h5>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-3">
+        <a href="{% url 'appointments:appointment_history' %}" class="text-decoration-none">
+            <div class="card dashboard-card action-card text-center h-100">
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <i class="bi bi-clock-history display-5 text-success"></i>
+                    <h5 class="mt-3">History</h5>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-3">
+        <a href="{% url 'doctors:search_doctors' %}" class="text-decoration-none">
+            <div class="card dashboard-card action-card text-center h-100">
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <i class="bi bi-search display-5 text-warning"></i>
+                    <h5 class="mt-3">Search Doctors</h5>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Recent Appointments</span>
+        <a href="{% url 'appointments:appointment_history' %}" class="btn btn-sm btn-outline-primary">View All</a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Doctor</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for apt in appointments %}
+                    <tr>
+                        <td>{{ apt.date }}</td>
+                        <td>{{ apt.time }}</td>
+                        <td>Dr. {{ apt.doctor.name }}</td>
+                        <td>
+                            <span class="badge
+                                {% if apt.status == 'PENDING' %}bg-warning
+                                {% elif apt.status == 'APPROVED' %}bg-info
+                                {% elif apt.status == 'COMPLETED' %}bg-success
+                                {% else %}bg-secondary{% endif %}">
+                                {{ apt.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if apt.status == 'PENDING' or apt.status == 'APPROVED' %}
+                            <a href="{% url 'appointments:cancel_appointment' apt.pk %}"
+                                class="btn btn-sm btn-outline-danger"
+                                onclick="return confirm('Cancel this appointment?');">Cancel</a>
+                            {% else %}
+                            —
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">No appointments yet. <a
+                                href="{% url 'doctors:doctor_list' %}">Book one now</a>.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Meet Our Doctors Section -->
+<div class="mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-people"></i> Meet Our New Doctors</h2>
+        <a href="{% url 'doctors:doctor_list' %}" class="btn btn-outline-primary btn-sm">View All Doctors</a>
+    </div>
+
+    <div class="row">
+        {% for doctor in doctors %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm" style="border-radius: 1rem;">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        {% if doctor.profile_image %}
+                        <img src="{{ doctor.profile_image.url }}" alt="{{ doctor.name }}"
+                            class="rounded-circle shadow-sm" style="width: 80px; height: 80px; object-fit: cover;">
+                        {% else %}
+                        <img src="https://api.dicebear.com/9.x/avataaars/svg?seed={{ doctor.user.username }}"
+                            alt="{{ doctor.name }}" class="rounded-circle shadow-sm"
+                            style="width: 80px; height: 80px; object-fit: cover;">
+                        {% endif %}
+                    </div>
+                    <h5 class="fw-bold mb-1">Dr. {{ doctor.user.get_full_name|default:doctor.user.username }}</h5>
+                    <p class="text-muted small mb-2">{{ doctor.specialization }}</p>
+                    <p class="text-success fw-bold small mb-3">₹{{ doctor.consultation_fee }}</p>
+                    <a href="{% url 'doctors:doctor_detail' doctor.pk %}"
+                        class="btn btn-sm btn-primary rounded-pill px-4">View Profile</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center text-muted">
+            <p>No doctors registered yet.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

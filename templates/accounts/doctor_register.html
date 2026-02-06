@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+{% block title %}Doctor Registration - Hospital MS{% endblock %}
+{% block extra_css %}
+<style>
+    /* Page background spacing */
+    .card {
+        border-radius: 1.25rem;
+    }
+
+    .card-body {
+        background: linear-gradient(180deg,
+                #ffffff 0%,
+                #f9fafb 100%);
+    }
+
+    /* Title */
+    .card-title {
+        font-weight: 800;
+        color: #0b1c2d;
+        letter-spacing: 0.3px;
+    }
+
+    .card-title i {
+        color: #1fa37c;
+        font-size: 1.8rem;
+        vertical-align: middle;
+        margin-right: 6px;
+    }
+
+    /* Section headers */
+    h6.text-muted {
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.08em;
+        color: #6b7280 !important;
+    }
+
+    hr {
+        border-top: 1px solid #e5e7eb;
+    }
+
+    /* Labels */
+    .form-label {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #1f2933;
+    }
+
+    /* Inputs & selects */
+    .form-control,
+    .form-select {
+        border-radius: 0.75rem;
+        padding: 0.6rem 0.75rem;
+        border: 1px solid #d1d5db;
+        transition: all 0.25s ease;
+        font-size: 0.9rem;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #1fa37c;
+        box-shadow: 0 0 0 0.2rem rgba(31, 163, 124, 0.15);
+    }
+
+    /* Error messages */
+    .text-danger.small {
+        font-size: 0.75rem;
+        margin-top: 4px;
+        font-weight: 500;
+    }
+
+    /* Submit button */
+    button[type="submit"] {
+        background: linear-gradient(135deg, #1fa37c, #178b69);
+        border: none;
+        border-radius: 999px;
+        font-weight: 700;
+        letter-spacing: 0.4px;
+        padding: 0.7rem;
+        box-shadow: 0 10px 25px rgba(31, 163, 124, 0.4);
+        transition: all 0.25s ease;
+    }
+
+    button[type="submit"]:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 14px 30px rgba(31, 163, 124, 0.55);
+    }
+
+    /* Bottom links */
+    .card-body p a {
+        font-weight: 600;
+        color: #0b1c2d;
+        text-decoration: none;
+    }
+
+    .card-body p a:hover {
+        color: #1fa37c;
+        text-decoration: underline;
+    }
+
+    /* Mobile spacing */
+    @media (max-width: 576px) {
+        .card-body {
+            padding: 2.5rem 1.5rem !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body p-5">
+                <h3 class="card-title text-center mb-4">
+                    <i class="bi bi-person-badge text-primary"></i> Doctor Registration
+                </h3>
+                <form method="post" action="{% url 'accounts:register_doctor' %}" id="doctorRegisterForm"
+                    enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <h6 class="text-muted mb-2">Account details</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Username *</label>
+                            <input type="text" name="username" class="form-control" required
+                                value="{{ form.username.value|default:'' }}" maxlength="150">
+                            {% if form.username.errors %}
+                            <div class="text-danger small">{{ form.username.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email *</label>
+                            <input type="email" name="email" class="form-control" required
+                                value="{{ form.email.value|default:'' }}">
+                            {% if form.email.errors %}
+                            <div class="text-danger small">{{ form.email.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">First Name *</label>
+                            <input type="text" name="first_name" class="form-control" required
+                                value="{{ form.first_name.value|default:'' }}">
+                            {% if form.first_name.errors %}
+                            <div class="text-danger small">{{ form.first_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Last Name *</label>
+                            <input type="text" name="last_name" class="form-control" required
+                                value="{{ form.last_name.value|default:'' }}">
+                            {% if form.last_name.errors %}
+                            <div class="text-danger small">{{ form.last_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Password *</label>
+                            <input type="password" name="password1" class="form-control" required
+                                placeholder="Min 8 characters">
+                            {% if form.password1.errors %}
+                            <div class="text-danger small">{{ form.password1.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Confirm Password *</label>
+                            <input type="password" name="password2" class="form-control" required>
+                            {% if form.password2.errors %}
+                            <div class="text-danger small">{{ form.password2.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input type="text" name="phone" class="form-control" value="{{ form.phone.value|default:'' }}"
+                            placeholder="Optional">
+                    </div>
+
+                    <hr class="my-4">
+                    <h6 class="text-muted mb-2">Doctor profile</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Display name *</label>
+                            <input type="text" name="name" class="form-control" required
+                                value="{{ form.name.value|default:'' }}" placeholder="e.g. Dr. John Smith">
+                            {% if form.name.errors %}
+                            <div class="text-danger small">{{ form.name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Specialization *</label>
+                            <input type="text" name="specialization" class="form-control" required
+                                value="{{ form.specialization.value|default:'' }}" placeholder="e.g. General Physician">
+                            {% if form.specialization.errors %}
+                            <div class="text-danger small">{{ form.specialization.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Profile Image</label>
+                        <input type="file" name="profile_image" class="form-control" accept="image/*">
+                        {% if form.profile_image.errors %}
+                        <div class="text-danger small">{{ form.profile_image.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">City *</label>
+                            {{ form.city }}
+                            {% if form.city.errors %}
+                            <div class="text-danger small">{{ form.city.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Hospital / Clinic *</label>
+                            {{ form.clinic }}
+                            {% if form.clinic.errors %}
+                            <div class="text-danger small">{{ form.clinic.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Years of experience *</label>
+                            <input type="number" name="experience" class="form-control" required min="0"
+                                value="{{ form.experience.value|default:'' }}">
+                            {% if form.experience.errors %}
+                            <div class="text-danger small">{{ form.experience.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Consultation fee (₹) *</label>
+                            <input type="number" name="consultation_fee" class="form-control" required min="0"
+                                step="0.01" value="{{ form.consultation_fee.value|default:'' }}">
+                            {% if form.consultation_fee.errors %}
+                            <div class="text-danger small">{{ form.consultation_fee.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mt-2">Register as Doctor</button>
+                </form>
+                <p class="text-center mt-3 mb-0">
+                    Already have an account? <a href="{% url 'accounts:login' %}">Login</a>
+                    &nbsp;|&nbsp;
+                    <a href="{% url 'accounts:register' %}">Register as Patient</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const citySelect = document.getElementById('id_city');
+        const clinicSelect = document.getElementById('id_clinic');
+        citySelect.addEventListener('change', function () {
+            const cityId = this.value;
+            clinicSelect.innerHTML = '<option value="">Select Hospital/Clinic</option>';
+            if (!cityId) return;
+            fetch('/hospitals/ajax/clinics/?city_id=' + cityId)
+                .then(r => r.json())
+                .then(data => {
+                    data.clinics.forEach(c => {
+                        clinicSelect.innerHTML += '<option value="' + c.id + '">' + c.name + '</option>';
+                    });
+                });
+        });
+        if (citySelect.value) citySelect.dispatchEvent(new Event('change'));
+    });
+</script>
+{% endblock %}

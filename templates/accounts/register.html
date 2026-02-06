@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% block extra_css %}
+<style>
+    /* Card */
+    .card {
+        border-radius: 1.25rem;
+        border: none;
+    }
+
+    .card-body {
+        background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+    }
+
+    /* Title */
+    .card-title {
+        font-weight: 800;
+        color: #0b1c2d;
+        letter-spacing: 0.3px;
+    }
+
+    .card-title i {
+        color: #1fa37c;
+        font-size: 1.7rem;
+        vertical-align: middle;
+        margin-right: 6px;
+    }
+
+    /* Labels */
+    .form-label {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #1f2933;
+    }
+
+    /* Inputs & textarea */
+    .form-control,
+    textarea.form-control {
+        border-radius: 0.75rem;
+        padding: 0.65rem 0.75rem;
+        border: 1px solid #d1d5db;
+        transition: all 0.25s ease;
+        font-size: 0.9rem;
+        resize: none;
+    }
+
+    .form-control:focus,
+    textarea.form-control:focus {
+        border-color: #1fa37c;
+        box-shadow: 0 0 0 0.2rem rgba(31, 163, 124, 0.15);
+    }
+
+    /* Errors */
+    .text-danger.small {
+        font-size: 0.75rem;
+        margin-top: 4px;
+        font-weight: 500;
+    }
+
+    /* Button */
+    button[type="submit"] {
+        background: linear-gradient(135deg, #1fa37c, #178b69);
+        border: none;
+        border-radius: 999px;
+        font-weight: 700;
+        letter-spacing: 0.4px;
+        padding: 0.7rem;
+        box-shadow: 0 10px 25px rgba(31, 163, 124, 0.4);
+        transition: all 0.25s ease;
+    }
+
+    button[type="submit"]:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 14px 30px rgba(31, 163, 124, 0.55);
+    }
+
+    /* Bottom links */
+    .card-body p a {
+        font-weight: 600;
+        color: #0b1c2d;
+        text-decoration: none;
+    }
+
+    .card-body p a:hover {
+        color: #1fa37c;
+        text-decoration: underline;
+    }
+
+    /* Mobile */
+    @media (max-width: 576px) {
+        .card-body {
+            padding: 2.5rem 1.5rem !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block title %}Register - Hospital MS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-body p-5">
+                <h3 class="card-title text-center mb-4">
+                    <i class="bi bi-person-plus text-primary"></i> Patient Registration
+                </h3>
+                <form method="post" action="{% url 'accounts:register' %}">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" name="username" class="form-control" required
+                                   value="{{ form.username.value|default:'' }}" maxlength="150">
+                            {% if form.username.errors %}
+                            <div class="text-danger small">{{ form.username.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" required
+                                   value="{{ form.email.value|default:'' }}">
+                            {% if form.email.errors %}
+                            <div class="text-danger small">{{ form.email.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">First Name</label>
+                            <input type="text" name="first_name" class="form-control" required
+                                   value="{{ form.first_name.value|default:'' }}">
+                            {% if form.first_name.errors %}
+                            <div class="text-danger small">{{ form.first_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" name="last_name" class="form-control" required
+                                   value="{{ form.last_name.value|default:'' }}">
+                            {% if form.last_name.errors %}
+                            <div class="text-danger small">{{ form.last_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input type="text" name="phone" class="form-control"
+                               value="{{ form.phone.value|default:'' }}" placeholder="Optional">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <textarea name="address" class="form-control" rows="2"
+                                  placeholder="Optional">{{ form.address.value|default:'' }}</textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" name="password1" class="form-control" required
+                                   placeholder="Min 8 characters">
+                            {% if form.password1.errors %}
+                            <div class="text-danger small">{{ form.password1.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Confirm Password</label>
+                            <input type="password" name="password2" class="form-control" required>
+                            {% if form.password2.errors %}
+                            <div class="text-danger small">{{ form.password2.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Register</button>
+                </form>
+                <p class="text-center mt-3 mb-0">
+                    Already have an account? <a href="{% url 'accounts:login' %}">Login</a>
+                    &nbsp;|&nbsp;
+                    <a href="{% url 'accounts:register_doctor' %}">Register as Doctor</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

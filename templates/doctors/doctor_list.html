@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %}Doctors - Hospital MS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-title {
+        font-weight: 800;
+        color: #0b1c2d;
+    }
+
+    .doctor-card {
+        border-radius: 1.25rem;
+        border: none;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+        transition: all 0.25s ease;
+    }
+
+    .doctor-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15);
+    }
+
+    .doctor-avatar {
+        width: 95px;
+        height: 95px;
+        object-fit: cover;
+        border-radius: 50%;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    }
+
+    .doctor-name {
+        font-weight: 700;
+    }
+
+    .meta {
+        font-size: 0.8rem;
+        color: #6b7280;
+    }
+
+    .fee {
+        font-weight: 700;
+        color: #16a34a;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h2 class="mb-4 page-title">
+    <i class="bi bi-person-badge"></i> Our Doctors
+</h2>
+
+<div class="row">
+    {% for doctor in doctors %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card doctor-card h-100">
+            <div class="card-body text-center">
+
+                <div class="mb-3">
+                    {% if doctor.profile_image %}
+                    <img src="{{ doctor.profile_image.url }}" alt="{{ doctor.name }}" class="doctor-avatar">
+                    {% else %}
+                    <img src="https://api.dicebear.com/9.x/avataaars/svg?seed={{ doctor.user.username }}"
+                        alt="{{ doctor.name }}" class="doctor-avatar">
+                    {% endif %}
+                </div>
+
+                <h5 class="doctor-name mb-1">
+                    Dr. {{ doctor.user.get_full_name|default:doctor.user.username }}
+                </h5>
+
+                <p class="text-muted small mb-1">
+                    {{ doctor.specialization }}
+                </p>
+
+                <p class="meta mb-1">
+                    <i class="bi bi-geo-alt"></i> {{ doctor.city }}
+                </p>
+
+                <p class="meta mb-1">
+                    <i class="bi bi-award"></i>
+                    {{ doctor.experience }} years experience
+                </p>
+
+                <p class="fee mb-3">
+                    ₹{{ doctor.consultation_fee }} Consultation
+                </p>
+
+                <div class="d-grid gap-2">
+                    <a href="{% url 'doctors:doctor_detail' doctor.pk %}"
+                        class="btn btn-outline-primary btn-sm rounded-pill">
+                        View Profile
+                    </a>
+                    <!-- {% if user.is_authenticated %}
+                    <a href="{% url 'appointments:slot_booking_entry' doctor_id=doctor.id %}"
+                        class="btn btn-primary btn-sm rounded-pill">
+                        Book Appointment
+                    </a>
+                    {% else %}
+                    <a href="{% url 'accounts:login' %}?next={% url 'appointments:slot_booking_entry' doctor_id=doctor.id %}"
+                        class="btn btn-primary btn-sm rounded-pill">
+                        Book Appointment
+                    </a>
+                    {% endif %} -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="alert alert-info text-center">
+        No doctors available.
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

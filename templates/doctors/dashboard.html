@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% block title %}Doctor Dashboard - Hospital MS{% endblock %}
+
+{% block extra_css %}
+<style>
+    h2 {
+        font-weight: 800;
+        color: #0b1c2d;
+    }
+
+    .dashboard-card {
+        border-radius: 1.25rem;
+        border: none;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .profile-card {
+        background: linear-gradient(135deg, #1fa37c, #138f6a);
+        color: #fff;
+    }
+
+    .stat-card h4 {
+        font-weight: 800;
+    }
+
+    .section-title {
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-grid"></i> Doctor Dashboard</h2>
+
+{% if doctor %}
+
+<!-- PROFILE + STATS -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card dashboard-card profile-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <h5>Dr. {{ doctor.name }}</h5>
+                    <a href="{% url 'doctors:update_profile' %}" class="text-white" title="Edit Profile">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                </div>
+                <p class="mb-1">{{ doctor.specialization }}</p>
+                <p class="small mb-0">
+                    {{ doctor.clinic.name }} – {{ doctor.city.name }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card dashboard-card text-center">
+            <div class="card-body">
+                <h6 class="text-muted">Today</h6>
+                <h4 class="text-primary">{{ today_count }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card dashboard-card text-center">
+            <div class="card-body">
+                <h6 class="text-muted">Total Upcoming</h6>
+                <h4 class="text-success">{{ appointments_count }}</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DOCTOR DETAILS -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card dashboard-card">
+            <div class="card-body">
+                <h6 class="section-title">Professional Details</h6>
+                <p><strong>Experience:</strong> {{ doctor.experience }} years</p>
+                <p><strong>Consultation Fee:</strong> ₹{{ doctor.consultation_fee }}</p>
+                <p><strong>Specialization:</strong> {{ doctor.specialization }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card dashboard-card">
+            <div class="card-body">
+                <h6 class="section-title">Clinic Details</h6>
+                <p><strong>Clinic:</strong> {{ doctor.clinic.name }}</p>
+                <p><strong>City:</strong> {{ doctor.city.name }}</p>
+                <p><strong>Address:</strong> {{ doctor.clinic.address }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- APPOINTMENTS -->
+<div class="card dashboard-card">
+    <div class="card-body">
+        <h5 class="card-title mb-3">Recent Appointments</h5>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Patient</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for apt in appointments %}
+                    <tr>
+                        <td>{{ apt.date }}</td>
+                        <td>{{ apt.time }}</td>
+                        <td>{{ apt.patient.get_full_name|default:apt.patient.username }}</td>
+                        <td>
+                            {% if apt.status == 'PENDING' %}
+                            <span class="badge bg-warning text-dark">{{ apt.status }}</span>
+                            {% elif apt.status == 'APPROVED' %}
+                            <span class="badge bg-success">{{ apt.status }}</span>
+                            {% elif apt.status == 'CANCELLED' %}
+                            <span class="badge bg-danger">{{ apt.status }}</span>
+                            {% elif apt.status == 'COMPLETED' %}
+                            <span class="badge bg-secondary">{{ apt.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if apt.status == 'PENDING' %}
+                            <a href="{% url 'appointments:update_appointment_status' apt.id 'APPROVED' %}"
+                                class="btn btn-sm btn-success">Accept</a>
+                            <a href="{% url 'appointments:update_appointment_status' apt.id 'CANCELLED' %}"
+                                class="btn btn-sm btn-danger">Reject</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">
+                            No appointments yet
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<div class="alert alert-warning">
+    No doctor profile linked. Please contact admin.
+</div>
+{% endif %}
+{% endblock %}

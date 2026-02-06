@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% block title %}Search Doctors - Hospital MS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-title {
+        font-weight: 800;
+        color: #0b1c2d;
+    }
+
+    .doctor-card {
+        border-radius: 1.25rem;
+        border: none;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+        transition: all 0.25s ease;
+    }
+
+    .doctor-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15);
+    }
+
+    .doctor-avatar {
+        width: 95px;
+        height: 95px;
+        object-fit: cover;
+        border-radius: 50%;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    }
+
+    .doctor-name {
+        font-weight: 700;
+    }
+
+    .meta {
+        font-size: 0.8rem;
+        color: #6b7280;
+    }
+
+    .fee {
+        font-weight: 700;
+        color: #16a34a;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="page-title">
+        <i class="bi bi-search text-primary"></i> Search Doctors
+    </h2>
+    <a href="{% url 'appointments:patient_dashboard' %}" class="btn btn-outline-secondary rounded-pill">
+        <i class="bi bi-arrow-left"></i> Dashboard
+    </a>
+</div>
+
+<!-- Filter Section -->
+<div class="card mb-5 border-0 shadow-sm" style="background-color: #f8f9fa;">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label small fw-bold text-muted">Location</label>
+                <select name="city" class="form-select border-0 shadow-sm">
+                    <option value="">All Locations</option>
+                    {% for city in cities %}
+                    <option value="{{ city }}" {% if selected_city==city %}selected{% endif %}>{{ city }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-bold text-muted">Designation</label>
+                <select name="specialization" class="form-select border-0 shadow-sm">
+                    <option value="">All Designations</option>
+                    {% for spec in specializations %}
+                    <option value="{{ spec }}" {% if selected_spec==spec %}selected{% endif %}>{{ spec }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-bold text-muted">Hospital</label>
+                <select name="clinic" class="form-select border-0 shadow-sm">
+                    <option value="">All Hospitals</option>
+                    {% for clinic in clinics %}
+                    <option value="{{ clinic }}" {% if selected_clinic==clinic %}selected{% endif %}>{{ clinic }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100 me-2 shadow-sm rounded-pill">
+                    <i class="bi bi-funnel"></i> Find Doctors
+                </button>
+                <a href="{% url 'doctors:search_doctors' %}"
+                    class="btn btn-outline-secondary w-50 rounded-pill shadow-sm">
+                    Clear
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    {% for doctor in doctors %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card doctor-card h-100">
+            <div class="card-body text-center">
+
+                <div class="mb-3">
+                    {% if doctor.profile_image %}
+                    <img src="{{ doctor.profile_image.url }}" alt="{{ doctor.name }}" class="doctor-avatar">
+                    {% else %}
+                    <img src="https://api.dicebear.com/9.x/avataaars/svg?seed={{ doctor.user.username }}"
+                        alt="{{ doctor.name }}" class="doctor-avatar">
+                    {% endif %}
+                </div>
+
+                <h5 class="doctor-name mb-1">
+                    Dr. {{ doctor.user.get_full_name|default:doctor.user.username }}
+                </h5>
+
+                <p class="text-muted small mb-1">
+                    {{ doctor.specialization }}
+                </p>
+
+                <p class="meta mb-1">
+                    <i class="bi bi-geo-alt"></i> {{ doctor.city }}
+                </p>
+
+                <p class="meta mb-1">
+                    <i class="bi bi-award"></i>
+                    {{ doctor.experience }} years experience
+                </p>
+
+                <p class="fee mb-3">
+                    ₹{{ doctor.consultation_fee }} Consultation
+                </p>
+
+                <div class="d-grid gap-2">
+                    <a href="{% url 'doctors:doctor_detail' doctor.pk %}"
+                        class="btn btn-outline-primary btn-sm rounded-pill">
+                        View Profile
+                    </a>
+                    <a href="{% url 'appointments:slot_booking_entry' doctor_id=doctor.id %}"
+                        class="btn btn-primary btn-sm rounded-pill">
+                        Book Appointment
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <i class="bi bi-search display-4 text-muted mb-3"></i>
+        <h4 class="text-muted">No doctors found matching your criteria.</h4>
+        <p class="text-muted">Try adjusting the filters or <a href="{% url 'doctors:search_doctors' %}">clear
+                search</a>.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block extra_css %}
+<style>
+    /* Card */
+    .card {
+        border-radius: 50px;
+        border: none;
+    }
+
+    .card-body {
+        background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+    }
+
+    /* Title */
+    .card-title {
+        font-weight: 800;
+        color: #0b1c2d;
+        letter-spacing: 0.3px;
+    }
+
+    .card-title i {
+        color: #1fa37c;
+        font-size: 1.7rem;
+        vertical-align: middle;
+        margin-right: 6px;
+    }
+
+    /* Labels */
+    .form-label {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #1f2933;
+    }
+
+    /* Inputs */
+    .form-control {
+        border-radius: 0.75rem;
+        padding: 0.65rem 0.75rem;
+        border: 1px solid #d1d5db;
+        transition: all 0.25s ease;
+        font-size: 0.9rem;
+    }
+
+    .form-control:focus {
+        border-color: #1fa37c;
+        box-shadow: 0 0 0 0.2rem rgba(31, 163, 124, 0.15);
+    }
+
+    /* Errors */
+    .text-danger.small {
+        font-size: 0.75rem;
+        margin-top: 4px;
+        font-weight: 500;
+    }
+
+    /* Button */
+    button[type="submit"] {
+        background: linear-gradient(135deg, #1fa37c, #178b69);
+        border: none;
+        border-radius: 999px;
+        font-weight: 700;
+        letter-spacing: 0.4px;
+        padding: 0.7rem;
+        box-shadow: 0 10px 25px rgba(31, 163, 124, 0.4);
+        transition: all 0.25s ease;
+    }
+
+    button[type="submit"]:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 14px 30px rgba(31, 163, 124, 0.55);
+    }
+
+    /* Bottom links */
+    .card-body p a {
+        font-weight: 600;
+        color: #0b1c2d;
+        text-decoration: none;
+    }
+
+    .card-body p a:hover {
+        color: #1fa37c;
+        text-decoration: underline;
+    }
+
+    /* Mobile */
+    @media (max-width: 576px) {
+        .card-body {
+            padding: 2.5rem 1.5rem !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block title %}Login - Hospital MS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow">
+            <div class="card-body p-5">
+                <h3 class="card-title text-center mb-4">
+                    <i class="bi bi-box-arrow-in-right text-primary"></i> Login
+                </h3>
+                <form method="post" action="{% url 'accounts:login' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" name="username" class="form-control" required
+                               placeholder="Enter username" autofocus>
+                        {% if form.username.errors %}
+                        <div class="text-danger small">{{ form.username.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" name="password" class="form-control" required
+                               placeholder="Enter password">
+                        {% if form.password.errors %}
+                        <div class="text-danger small">{{ form.password.errors.0 }}</div>
+                        {% endif %}
+                        {% if form.non_field_errors %}
+                        <div class="text-danger small">{{ form.non_field_errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                </form>
+                <p class="text-center mt-3 mb-0">
+                    Don't have an account?
+                    <a href="{% url 'accounts:register' %}">Register as Patient</a>
+                    &nbsp;|&nbsp;
+                    <a href="{% url 'accounts:register_doctor' %}">Register as Doctor</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

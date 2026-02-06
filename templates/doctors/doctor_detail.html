@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}Dr. {{ doctor.name }} - Hospital MS{% endblock %}
+
+{% block content %}
+<div class="row">
+
+    <!-- LEFT SIDE IMAGE -->
+    <div class="col-md-4 text-center mb-4">
+        {% if doctor.profile_image %}
+        <img src="{{ doctor.profile_image.url }}" alt="{{ doctor.name }}" class="img-fluid rounded shadow doctor-img">
+        {% else %}
+        <img src="https://api.dicebear.com/9.x/avataaars/svg?seed={{ doctor.user.username }}" alt="{{ doctor.name }}"
+            class="img-fluid rounded shadow doctor-img">
+        {% endif %}
+    </div>
+
+    <!-- RIGHT SIDE DETAILS -->
+    <div class="col-md-8">
+
+        <h2>
+            Dr. {{ doctor.user.get_full_name|default:doctor.user.username }}
+        </h2>
+
+        <p class="text-muted lead">{{ doctor.specialization }}</p>
+
+        <ul class="list-unstyled">
+            <li><strong>City:</strong> {{ doctor.city }}</li>
+            <li><strong>Experience:</strong> {{ doctor.experience }} years</li>
+            <li><strong>Consultation Fee:</strong> ₹{{ doctor.consultation_fee }}</li>
+            <li><strong>Service:</strong> {{ doctor.service }}</li>
+        </ul>
+
+        <a href="{% url 'appointments:create' doctor.id %}" class="btn btn-success btn-lg w-100 mt-3 shadow-sm">
+            <i class="bi bi-check-circle-fill me-2"></i> Confirm & Book Appointment
+        </a>
+
+        <!-- SLOT BOOKING CARD
+        <div class="card">
+            <div class="card-body">
+
+                <h6 class="card-subtitle mb-3 text-muted">
+                    Select Available Slot
+                </h6>
+
+                {% if doctor.availabilities.all %}
+
+                {% for av in doctor.availabilities.all %}
+
+                <a href="{% url 'appointments:create' doctor.pk %}?slot={{ av.id }}"
+                    class="btn btn-outline-primary mb-2 me-2">
+
+                    {{ av.get_day_of_week_display }}
+                    {{ av.start_time|time:"g:i A" }} -
+                    {{ av.end_time|time:"g:i A" }}
+
+                </a>
+
+                {% endfor %}
+
+                {% else %}
+                <p class="text-muted mb-0">
+                    No slots available currently.
+                </p>
+                {% endif %}
+
+            </div>
+        </div> -->
+
+    </div>
+</div>
+{% endblock %}

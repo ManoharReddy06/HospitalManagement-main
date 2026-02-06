@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Labs - Hospital MS{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-droplet"></i> Laboratories</h2>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-8">
+                <input type="text" name="city" class="form-control" placeholder="Filter by City"
+                       value="{{ request.GET.city|default:'' }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Filter</button>
+            </div>
+            <div class="col-md-2">
+                <a href="{% url 'hospitals:lab_list' %}" class="btn btn-outline-secondary w-100">Clear</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    {% for lab in labs %}
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ lab.name }}</h5>
+                <p class="text-muted small mb-1"><i class="bi bi-geo-alt"></i> {{ lab.address }}, {{ lab.city.name }}</p>
+                <p class="small mb-1"><strong>Timings:</strong> {{ lab.timings }}</p>
+                <p class="small mb-0"><strong>Test Types:</strong> {{ lab.test_types }}</p>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">No labs found.</div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
